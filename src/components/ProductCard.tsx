@@ -1,29 +1,38 @@
 "use client";
 
 import { useState } from "react";
+import Image from "next/image";
+import { ShoppingCart } from "lucide-react";
 import { useCart } from "@/context/CartContext";
+
+type ProductSize = {
+  label: string;
+  price: number;
+};
 
 type Product = {
   id: number;
   name: string;
   category: string;
   image: string;
-  sizes: {
-    label: string;
-    price: number;
-  }[];
+  sizes: ProductSize[];
+  popular?: boolean;
+};
+
+type ProductCardProps = {
+  product: Product;
 };
 
 export default function ProductCard({
   product,
-}: {
-  product: Product;
-}) {
+}: ProductCardProps) {
+  const [selectedSize, setSelectedSize] = useState(
+    product.sizes[0]
+  );
+
   const { addToCart } = useCart();
 
-  const [selectedSize, setSelectedSize] = useState(product.sizes[0]);
-
-  function handleAddToCart() {
+  const handleAddToCart = () => {
     addToCart({
       id: product.id,
       name: product.name,
@@ -31,65 +40,66 @@ export default function ProductCard({
       size: selectedSize.label,
       price: selectedSize.price,
     });
-  }
+  };
 
   return (
-    <div className="group bg-neutral-900 border border-neutral-800 rounded-3xl overflow-hidden hover:border-green-500 transition duration-300 hover:-translate-y-1">
-
-      <div className="relative">
-        <img
-          src={product.image}
-          alt={product.name}
-          className="h-72 w-full object-cover group-hover:scale-105 transition duration-500"
-        />
-
-        <span className="absolute top-4 left-4 bg-green-500 text-black text-xs font-bold px-3 py-1 rounded-full">
+    <div className="relative overflow-hidden rounded-2xl border border-neutral-800 bg-neutral-950 p-4 transition hover:-translate-y-1 hover:border-green-500">
+      {product.popular && (
+        <span className="absolute left-3 top-3 z-10 rounded-full bg-green-500 px-3 py-1 text-xs font-bold text-black">
           POPULAR
         </span>
+      )}
+
+      <div className="relative mb-4 h-56 w-full overflow-hidden rounded-xl bg-neutral-900">
+        <Image
+          src={product.image}
+          alt={product.name}
+          fill
+          className="object-contain p-4"
+        />
       </div>
 
-      <div className="p-5">
+      <p className="mb-1 text-sm text-neutral-400">
+        {product.category}
+      </p>
 
-        <h3 className="text-2xl font-bold">
-          {product.name}
-        </h3>
+      <h3 className="mb-3 text-xl font-bold">
+        {product.name}
+      </h3>
 
-        <p className="text-neutral-400 mt-1">
-          {product.category}
-        </p>
+      <select
+        value={selectedSize.label}
+        onChange={(event) => {
+          const size = product.sizes.find(
+            (item) => item.label === event.target.value
+          );
 
-        <p className="text-green-400 text-2xl font-bold mt-4">
-          ₹{selectedSize.price}
-        </p>
-
-        <select
-          value={selectedSize.label}
-          onChange={(e) =>
-            setSelectedSize(
-              product.sizes.find(
-                (size) => size.label === e.target.value
-              ) || product.sizes[0]
-            )
+          if (size) {
+            setSelectedSize(size);
           }
-          className="w-full bg-neutral-800 rounded-xl p-3 mt-4 outline-none"
-        >
-          {product.sizes.map((size) => (
-            <option
-              key={size.label}
-              value={size.label}
-            >
-              {size.label} — ₹{size.price}
-            </option>
-          ))}
-        </select>
+        }}
+        className="mb-4 w-full rounded-lg border border-neutral-700 bg-neutral-900 px-3 py-2 text-white outline-none"
+      >
+        {product.sizes.map((size) => (
+          <option key={size.label} value={size.label}>
+            {size.label} — ₹{size.price}
+          </option>
+        ))}
+      </select>
+
+      <div className="flex items-center justify-between gap-3">
+        <span className="text-xl font-bold text-green-400">
+          ₹{selectedSize.price}
+        </span>
 
         <button
+          type="button"
           onClick={handleAddToCart}
-          className="w-full mt-4 bg-green-500 hover:bg-green-600 text-black font-bold py-3 rounded-xl transition"
+          className="flex items-center gap-2 rounded-xl bg-green-500 px-4 py-2 font-bold text-black transition hover:bg-green-600"
         >
-          ADD TO CART
+          <ShoppingCart size={18} />
+          Add
         </button>
-
       </div>
     </div>
   );

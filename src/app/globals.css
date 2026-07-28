@@ -24,3 +24,28 @@ body {
   color: var(--foreground);
   font-family: Arial, Helvetica, sans-serif;
 }
+
+/* DRINKIT cart scrollbar */
+.cart-scrollbar {
+  scrollbar-width: thin;
+  scrollbar-color: #22c55e #171717;
+}
+
+.cart-scrollbar::-webkit-scrollbar {
+  width: 8px;
+}
+
+.cart-scrollbar::-webkit-scrollbar-track {
+  background: #171717;
+  border-radius: 999px;
+}
+
+.cart-scrollbar::-webkit-scrollbar-thumb {
+  background: #22c55e;
+  border-radius: 999px;
+  border: 2px solid #171717;
+}
+
+.cart-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: #16a34a;
+}
