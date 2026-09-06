@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect } from "react";
+import { useRouter } from "next/navigation";
 import {
   Minus,
   Plus,
@@ -19,6 +20,8 @@ export default function CartDrawer({
   open,
   onClose,
 }: Props) {
+  const router = useRouter();
+
   const {
     cart,
     subtotal,
@@ -27,35 +30,51 @@ export default function CartDrawer({
     removeFromCart,
   } = useCart();
 
-  // Prevent the background page from scrolling
+  // Prevent background scrolling
   useEffect(() => {
     if (!open) return;
 
-    const previousOverflow = document.body.style.overflow;
+    const previousOverflow =
+      document.body.style.overflow;
 
     document.body.style.overflow = "hidden";
 
     return () => {
-      document.body.style.overflow = previousOverflow;
+      document.body.style.overflow =
+        previousOverflow;
     };
   }, [open]);
 
-  // Close the cart when Escape is pressed
+  // Close cart with Escape key
   useEffect(() => {
-    const handleEscape = (event: KeyboardEvent) => {
+    const handleEscape = (
+      event: KeyboardEvent
+    ) => {
       if (event.key === "Escape") {
         onClose();
       }
     };
 
     if (open) {
-      window.addEventListener("keydown", handleEscape);
+      window.addEventListener(
+        "keydown",
+        handleEscape
+      );
     }
 
     return () => {
-      window.removeEventListener("keydown", handleEscape);
+      window.removeEventListener(
+        "keydown",
+        handleEscape
+      );
     };
   }, [open, onClose]);
+
+  // Go to checkout
+  const handleCheckout = () => {
+    onClose();
+    router.push("/checkout");
+  };
 
   return (
     <>
@@ -72,7 +91,9 @@ export default function CartDrawer({
       {/* Cart drawer */}
       <aside
         className={`fixed right-0 top-0 z-50 grid h-dvh w-full max-w-[420px] grid-rows-[auto_minmax(0,1fr)_auto] border-l border-neutral-800 bg-neutral-950 text-white shadow-2xl transition-transform duration-300 ${
-          open ? "translate-x-0" : "translate-x-full"
+          open
+            ? "translate-x-0"
+            : "translate-x-full"
         }`}
       >
         {/* Header */}
@@ -105,10 +126,12 @@ export default function CartDrawer({
           </button>
         </header>
 
-        {/* Only this area scrolls */}
+        {/* Scrollable cart content */}
         <main
           className="cart-scrollbar min-h-0 overflow-y-auto overscroll-contain p-5"
-          onWheel={(event) => event.stopPropagation()}
+          onWheel={(event) =>
+            event.stopPropagation()
+          }
         >
           {cart.length === 0 ? (
             <div className="flex min-h-full flex-col items-center justify-center text-center">
@@ -122,7 +145,8 @@ export default function CartDrawer({
               </h3>
 
               <p className="mt-2 text-neutral-400">
-                Add some products to begin your order.
+                Add some products to begin
+                your order.
               </p>
             </div>
           ) : (
@@ -207,7 +231,9 @@ export default function CartDrawer({
                       </p>
 
                       <p className="font-bold">
-                        ₹{item.price * item.quantity}
+                        ₹
+                        {item.price *
+                          item.quantity}
                       </p>
                     </div>
                   </div>
@@ -217,7 +243,7 @@ export default function CartDrawer({
           )}
         </main>
 
-        {/* Fixed footer */}
+        {/* Footer */}
         <footer className="border-t border-neutral-800 bg-neutral-950 p-5">
           <div className="mb-4 flex items-center justify-between">
             <span className="text-neutral-400">
@@ -231,6 +257,7 @@ export default function CartDrawer({
 
           <button
             type="button"
+            onClick={handleCheckout}
             disabled={cart.length === 0}
             className="w-full rounded-xl bg-green-500 py-4 font-bold text-black transition hover:bg-green-600 disabled:cursor-not-allowed disabled:bg-neutral-700 disabled:text-neutral-400"
           >
