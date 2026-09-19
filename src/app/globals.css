@@ -1,38 +1,178 @@
 @import "tailwindcss";
 
+/* =========================================
+   DRINKIT — GLOBAL THEME
+   ========================================= */
+
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --background: #000000;
+  --foreground: #f5f5f5;
+
+  --brand-green: #4ade80;
+  --brand-green-dark: #22c55e;
+
+  --surface: #0a0a0a;
+  --surface-light: #171717;
+
+  --border: rgba(255, 255, 255, 0.08);
 }
 
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
+
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+
+/* =========================================
+   BASE
+   ========================================= */
+
+html {
+  scroll-behavior: smooth;
+  background: #000000;
 }
 
 body {
+  margin: 0;
   background: var(--background);
   color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+
+  font-family:
+    Arial,
+    Helvetica,
+    sans-serif;
+
+  min-height: 100vh;
+
+  overflow-x: hidden;
+
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
 
-/* DRINKIT cart scrollbar */
+
+/* =========================================
+   TEXT SELECTION
+   ========================================= */
+
+::selection {
+  background: var(--brand-green);
+  color: #000000;
+}
+
+
+/* =========================================
+   LINKS
+   ========================================= */
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+
+/* =========================================
+   BUTTONS
+   ========================================= */
+
+button {
+  font: inherit;
+}
+
+button:not(:disabled) {
+  cursor: pointer;
+}
+
+button:disabled {
+  cursor: not-allowed;
+}
+
+
+/* =========================================
+   FORM ELEMENTS
+   ========================================= */
+
+input,
+textarea,
+select,
+button {
+  font-family: inherit;
+}
+
+input::placeholder,
+textarea::placeholder {
+  color: #525252;
+}
+
+
+/* =========================================
+   ACCESSIBILITY / FOCUS
+   ========================================= */
+
+button:focus-visible,
+a:focus-visible,
+input:focus-visible,
+textarea:focus-visible,
+select:focus-visible {
+  outline: 2px solid var(--brand-green);
+  outline-offset: 3px;
+}
+
+
+/* =========================================
+   IMAGES
+   ========================================= */
+
+img {
+  max-width: 100%;
+}
+
+
+/* =========================================
+   GLOBAL SCROLLBAR
+   ========================================= */
+
+* {
+  scrollbar-width: thin;
+  scrollbar-color: #404040 #0a0a0a;
+}
+
+*::-webkit-scrollbar {
+  width: 9px;
+  height: 9px;
+}
+
+*::-webkit-scrollbar-track {
+  background: #0a0a0a;
+}
+
+*::-webkit-scrollbar-thumb {
+  background: #404040;
+  border-radius: 999px;
+  border: 2px solid #0a0a0a;
+}
+
+*::-webkit-scrollbar-thumb:hover {
+  background: #525252;
+}
+
+
+/* =========================================
+   DRINKIT CART SCROLLBAR
+   ========================================= */
+
 .cart-scrollbar {
   scrollbar-width: thin;
-  scrollbar-color: #22c55e #171717;
+  scrollbar-color:
+    var(--brand-green-dark)
+    #171717;
 }
 
 .cart-scrollbar::-webkit-scrollbar {
-  width: 8px;
+  width: 7px;
 }
 
 .cart-scrollbar::-webkit-scrollbar-track {
@@ -41,11 +181,73 @@ body {
 }
 
 .cart-scrollbar::-webkit-scrollbar-thumb {
-  background: #22c55e;
+  background: var(--brand-green-dark);
   border-radius: 999px;
   border: 2px solid #171717;
 }
 
 .cart-scrollbar::-webkit-scrollbar-thumb:hover {
-  background: #16a34a;
+  background: var(--brand-green);
+}
+
+
+/* =========================================
+   SMOOTH UI
+   ========================================= */
+
+button,
+a,
+input,
+textarea,
+select {
+  transition-property:
+    color,
+    background-color,
+    border-color,
+    opacity,
+    transform,
+    box-shadow;
+
+  transition-duration: 200ms;
+  transition-timing-function: ease;
+}
+
+
+/* =========================================
+   MOBILE TAP BEHAVIOUR
+   ========================================= */
+
+button,
+a {
+  -webkit-tap-highlight-color: transparent;
+}
+
+
+/* =========================================
+   REDUCED MOTION ACCESSIBILITY
+   ========================================= */
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+
+/* =========================================
+   MOBILE
+   ========================================= */
+
+@media (max-width: 640px) {
+  *::-webkit-scrollbar {
+    width: 5px;
+  }
 }
