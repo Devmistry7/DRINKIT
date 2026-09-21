@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Image from "next/image";
 import {
   ShoppingCart,
@@ -34,7 +34,52 @@ export default function ProductCard({
     product.sizes[0]
   );
 
+  const [isHighlighted, setIsHighlighted] =
+    useState(false);
+
   const { addToCart } = useCart();
+
+  /*
+   * Navbar search dispatches this event after
+   * scrolling to a product.
+   *
+   * The matching card briefly receives a
+   * green highlight.
+   */
+  useEffect(() => {
+    const handleSearchHighlight = (
+      event: Event
+    ) => {
+      const customEvent =
+        event as CustomEvent<number>;
+
+      if (customEvent.detail !== product.id) {
+        return;
+      }
+
+      setIsHighlighted(true);
+
+      const timeout = window.setTimeout(() => {
+        setIsHighlighted(false);
+      }, 1600);
+
+      return () => {
+        window.clearTimeout(timeout);
+      };
+    };
+
+    window.addEventListener(
+      "drinkit:highlight-product",
+      handleSearchHighlight
+    );
+
+    return () => {
+      window.removeEventListener(
+        "drinkit:highlight-product",
+        handleSearchHighlight
+      );
+    };
+  }, [product.id]);
 
   const handleAddToCart = () => {
     addToCart({
@@ -47,7 +92,22 @@ export default function ProductCard({
   };
 
   return (
-    <article className="group relative overflow-hidden rounded-3xl border border-white/[0.08] bg-white/[0.025] p-4 transition-all duration-300 hover:-translate-y-1.5 hover:border-white/[0.16] hover:bg-white/[0.04] hover:shadow-2xl hover:shadow-black/30">
+    <article
+      id={`product-${product.id}`}
+      className={`group relative scroll-mt-32 overflow-hidden rounded-3xl border p-4 transition-all duration-500 hover:-translate-y-1.5 hover:bg-white/[0.04] hover:shadow-2xl hover:shadow-black/30 ${
+        isHighlighted
+          ? "border-green-400/80 bg-green-400/[0.06] shadow-2xl shadow-green-500/10 ring-2 ring-green-400/20"
+          : "border-white/[0.08] bg-white/[0.025] hover:border-white/[0.16]"
+      }`}
+    >
+      {/* Search Highlight Glow */}
+      <div
+        className={`pointer-events-none absolute inset-0 z-0 bg-gradient-to-br from-green-400/[0.08] via-transparent to-transparent transition-opacity duration-500 ${
+          isHighlighted
+            ? "opacity-100"
+            : "opacity-0"
+        }`}
+      />
 
       {/* Popular Badge */}
       {product.popular && (
@@ -58,8 +118,8 @@ export default function ProductCard({
       )}
 
       {/* Product Image */}
-      <div className="relative mb-5 h-56 w-full overflow-hidden rounded-2xl border border-white/[0.05] bg-gradient-to-b from-neutral-900 to-neutral-950 sm:h-60">
-        <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-black/20 via-transparent to-white/[0.03]" />
+      <div className="relative z-10 mb-5 h-56 w-full overflow-hidden rounded-2xl border border-white/[0.05] bg-gradient-to-b from-neutral-900 to-neutral-950 sm:h-60">
+        <div className="pointer-events-none absolute inset-0 z-10 bg-gradient-to-t from-black/20 via-transparent to-white/[0.03]" />
 
         <Image
           src={product.image}
@@ -71,7 +131,7 @@ export default function ProductCard({
       </div>
 
       {/* Product Details */}
-      <div>
+      <div className="relative z-10">
         <p className="mb-1.5 text-xs font-medium uppercase tracking-[0.14em] text-neutral-500">
           {product.category}
         </p>
@@ -82,7 +142,7 @@ export default function ProductCard({
       </div>
 
       {/* Size Selector */}
-      <div className="mt-4">
+      <div className="relative z-10 mt-4">
         <label className="mb-2 block text-xs font-medium text-neutral-500">
           Select size
         </label>
@@ -93,7 +153,8 @@ export default function ProductCard({
             onChange={(event) => {
               const size = product.sizes.find(
                 (item) =>
-                  item.label === event.target.value
+                  item.label ===
+                  event.target.value
               );
 
               if (size) {
@@ -119,15 +180,17 @@ export default function ProductCard({
       </div>
 
       {/* Price + Add Button */}
-      <div className="mt-5 flex items-end justify-between gap-4">
-
+      <div className="relative z-10 mt-5 flex items-end justify-between gap-4">
         <div>
           <p className="mb-1 text-[11px] font-medium uppercase tracking-wider text-neutral-600">
             Price
           </p>
 
           <p className="text-2xl font-black tracking-tight text-green-400">
-            ₹{selectedSize.price}
+            ₹
+            {selectedSize.price.toLocaleString(
+              "en-IN"
+            )}
           </p>
         </div>
 
