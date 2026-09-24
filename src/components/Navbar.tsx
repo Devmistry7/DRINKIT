@@ -28,12 +28,14 @@ export default function Navbar() {
 
   const { totalItems } = useCart();
 
-  // Clean search text
+  /* ================================
+     SEARCH
+     ================================ */
+
   const normalizedQuery = searchQuery
     .trim()
     .toLowerCase();
 
-  // Search products by name + category
   const searchResults =
     normalizedQuery.length > 0
       ? products
@@ -49,9 +51,13 @@ export default function Navbar() {
       : [];
 
   const showResults =
-    isSearchFocused && normalizedQuery.length > 0;
+    isSearchFocused &&
+    normalizedQuery.length > 0;
 
-  // Close search dropdown when clicking outside
+  /* ================================
+     CLOSE SEARCH WHEN CLICKING OUTSIDE
+     ================================ */
+
   useEffect(() => {
     const handleClickOutside = (
       event: MouseEvent
@@ -79,7 +85,10 @@ export default function Navbar() {
     };
   }, []);
 
-  // Escape closes search results
+  /* ================================
+     ESCAPE KEY
+     ================================ */
+
   useEffect(() => {
     const handleEscape = (
       event: KeyboardEvent
@@ -103,10 +112,18 @@ export default function Navbar() {
     };
   }, []);
 
+  /* ================================
+     CLEAR SEARCH
+     ================================ */
+
   const clearSearch = () => {
     setSearchQuery("");
     setIsSearchFocused(false);
   };
+
+  /* ================================
+     PRODUCT CLICK
+     ================================ */
 
   const handleProductClick = (
     productId: number
@@ -124,6 +141,17 @@ export default function Navbar() {
         behavior: "smooth",
         block: "center",
       });
+
+      window.setTimeout(() => {
+        window.dispatchEvent(
+          new CustomEvent(
+            "drinkit:highlight-product",
+            {
+              detail: productId,
+            }
+          )
+        );
+      }, 450);
     } else {
       document
         .getElementById("featured-products")
@@ -134,6 +162,10 @@ export default function Navbar() {
     }
   };
 
+  /* ================================
+     SEARCH RESULTS
+     ================================ */
+
   const renderSearchResults = () => {
     if (!showResults) {
       return null;
@@ -143,12 +175,14 @@ export default function Navbar() {
       <div className="absolute left-0 right-0 top-[calc(100%+10px)] z-50 overflow-hidden rounded-2xl border border-white/[0.09] bg-[#0b0b0b]/95 shadow-2xl shadow-black/60 backdrop-blur-xl">
         {searchResults.length > 0 ? (
           <>
+            {/* Header */}
             <div className="border-b border-white/[0.06] px-4 py-3">
               <p className="text-[11px] font-bold uppercase tracking-[0.18em] text-neutral-500">
                 Search Results
               </p>
             </div>
 
+            {/* Results */}
             <div className="max-h-[390px] overflow-y-auto cart-scrollbar">
               {searchResults.map((product) => {
                 const startingPrice = Math.min(
@@ -168,6 +202,7 @@ export default function Navbar() {
                     }
                     className="group flex w-full items-center gap-3 border-b border-white/[0.05] px-4 py-3 text-left transition last:border-b-0 hover:bg-white/[0.05]"
                   >
+                    {/* Image */}
                     <div className="flex h-14 w-14 shrink-0 items-center justify-center overflow-hidden rounded-xl border border-white/[0.07] bg-white/[0.04]">
                       <img
                         src={product.image}
@@ -176,6 +211,7 @@ export default function Navbar() {
                       />
                     </div>
 
+                    {/* Product Info */}
                     <div className="min-w-0 flex-1">
                       <p className="truncate text-sm font-bold text-white transition group-hover:text-green-400">
                         {product.name}
@@ -186,13 +222,15 @@ export default function Navbar() {
                       </p>
                     </div>
 
+                    {/* Price */}
                     <div className="shrink-0 text-right">
                       <p className="text-[10px] uppercase tracking-wider text-neutral-600">
                         From
                       </p>
 
                       <p className="mt-0.5 text-sm font-black text-green-400">
-                        ₹{startingPrice.toLocaleString(
+                        ₹
+                        {startingPrice.toLocaleString(
                           "en-IN"
                         )}
                       </p>
@@ -202,6 +240,7 @@ export default function Navbar() {
               })}
             </div>
 
+            {/* Result Count */}
             <div className="border-t border-white/[0.06] bg-white/[0.02] px-4 py-2.5">
               <p className="text-center text-[11px] text-neutral-600">
                 {searchResults.length} product
@@ -213,6 +252,7 @@ export default function Navbar() {
             </div>
           </>
         ) : (
+          /* No Results */
           <div className="px-6 py-8 text-center">
             <div className="mx-auto flex h-11 w-11 items-center justify-center rounded-full bg-white/[0.05]">
               <Search
@@ -242,7 +282,10 @@ export default function Navbar() {
           ref={searchRef}
           className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8"
         >
-          {/* Main Navbar */}
+          {/* ================================
+              MAIN NAVBAR
+              ================================ */}
+
           <div className="flex h-[72px] items-center justify-between gap-4">
             {/* Logo */}
             <button
@@ -263,7 +306,10 @@ export default function Navbar() {
               </h1>
             </button>
 
-            {/* Desktop Search */}
+            {/* ================================
+                DESKTOP SEARCH
+                ================================ */}
+
             <div className="relative hidden flex-1 justify-center md:flex">
               <div className="group flex w-full max-w-xl items-center rounded-full border border-white/[0.08] bg-white/[0.045] px-4 py-2.5 transition duration-300 focus-within:border-green-400/30 focus-within:bg-white/[0.07]">
                 <Search
@@ -303,12 +349,16 @@ export default function Navbar() {
                 )}
               </div>
 
+              {/* Desktop Results */}
               <div className="absolute left-1/2 top-full w-full max-w-xl -translate-x-1/2">
                 {renderSearchResults()}
               </div>
             </div>
 
-            {/* Right Actions */}
+            {/* ================================
+                RIGHT ACTIONS
+                ================================ */}
+
             <div className="flex items-center gap-2">
               {/* Mobile Search Button */}
               <button
@@ -330,7 +380,7 @@ export default function Navbar() {
                 )}
               </button>
 
-              {/* Cart Button */}
+              {/* Cart */}
               <button
                 type="button"
                 onClick={() =>
@@ -358,7 +408,10 @@ export default function Navbar() {
             </div>
           </div>
 
-          {/* Mobile Search */}
+          {/* ================================
+              MOBILE SEARCH
+              ================================ */}
+
           <div
             className={`relative transition-all duration-300 md:hidden ${
               isMobileSearchOpen
@@ -401,11 +454,13 @@ export default function Navbar() {
               )}
             </div>
 
+            {/* Mobile Results */}
             {renderSearchResults()}
           </div>
         </div>
       </nav>
 
+      {/* Cart Drawer */}
       <CartDrawer
         open={isCartOpen}
         onClose={() =>
